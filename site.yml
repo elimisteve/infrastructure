@@ -40,6 +40,17 @@
     - { role: mydumper, tags: [ 'mydumper' ] }
     - { role: caddy, tags: [ 'caddy' ] }
 
+- name: noisebridge_org
+  hosts: noisebridge_org
+  become: yes
+  become_method: sudo
+  tags: [noisebridge_org]
+  roles:
+    - noisebridge_org
+    - percona
+    - geerlingguy.mysql
+    - { role: caddy, tags: [ 'caddy' ] }
+
 - name: donate_noisebridge_net
   hosts: donate_noisebridge_net
   become: yes

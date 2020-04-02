@@ -1,0 +1,13 @@
+[Unit]
+Description=Python noisebridge.org implementation
+
+[Service]
+Restart=on-failure
+WorkingDirectory={{ noisebridge_org_base }}
+ExecStart={{ noisebridge_org_base }}/venv/bin/gunicorn config.wsgi -b 127.0.0.1:8890
+User={{ noisebridge_org_user }}
+Group={{ noisebridge_org_user }}
+Environment="NOISEBRIDGE_ORG_DOTENV={{ noisebridge_org_dotenv }}"
+
+[Install]
+WantedBy=multi-user.target

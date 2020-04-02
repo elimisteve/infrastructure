@@ -1,0 +1,11 @@
+---
+- name: reload noisebridge_org service file
+  systemd:
+    name: noisebridge_org
+    state: started
+    enabled: yes
+    daemon_reload: yes
+- name: restart noisebridge_org
+  systemd:
+    name: noisebridge_org
+    state: restarted

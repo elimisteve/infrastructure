@@ -1,0 +1,24 @@
+---
+noisebridge_org_version: HEAD
+noisebridge_org_user: noisebridge_org
+noisebridge_org_port: 8890
+noisebridge_org_config:
+  secrets:
+    db_pass: nope
+
+noisebridge_org_base: /srv/{{ noisebridge_org_user }}/code
+noisebridge_org_env: production
+noisebridge_org_venv: "{{ noisebridge_org_base }}/venv"
+noisebridge_org_python: "{{ noisebridge_org_venv }}/bin/python3.8"
+noisebridge_org_dotenv: "{{ noisebridge_org_base }}/.env"
+
+noisebridge_org_db:
+  connector: mysql
+  dialect: noisebridge_org
+  dbname: noisebridge_org_prod
+  dbuser: noisebridge_org
+  host: localhost
+  sock: "/var/run/mysqld/mysqld.sock"
+
+noisebridge_org_test_uri: "{{ noisebridge_org_db.connector }}+{{ noisebridge_org_db.dialect }}://{{ noisebridge_org_db.dbuser }}:{{ noisebridge_org_config.secrets.db_pass }}@{{ noisebridge_org_db.host }}/{{ noisebridge_org_db.dbname }}?unix_socket={{ noisebridge_org_db.sock }}"
+

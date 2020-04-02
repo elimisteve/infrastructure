@@ -1,0 +1,10 @@
+DB_USER="noisebridge_org"
+DB_PASS="{{ noisebridge_org_config.secrets.db_pass }}"
+DB_HOST="localhost"
+DB_SOCK="/var/run/mysqld/mysqld.sock"
+
+DB_PROD_NAME="noisebridge_org_prod"
+PROD_DATABASE_URI="mysql+mysqldb://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_PROD_NAME}?unix_socket=${DB_SOCK}"
+
+DB_TEST_NAME="noisebridge_org_test"
+TEST_DATABASE_URI="mysql+mysqldb://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_TEST_NAME}?unix_socket=${DB_SOCK}"

@@ -1,0 +1,87 @@
+---
+- name: Install apt dependencies
+  apt:
+    name: "{{ deps }}"
+  vars:
+    deps:
+      - python3
+      - python3-setuptools
+      - virtualenv
+      - git
+      - build-essential
+      - libpython3-dev
+      - libssl-dev
+      - gunicorn
+
+- name: Create group for noisebridge_org
+  group:
+    name: "{{ noisebridge_org_user }}"
+    state: present
+    system: yes
+
+- name: Create user for noisebridge_org
+  user:
+    name: "{{ noisebridge_org_user }}"
+    group: "{{ noisebridge_org_user }}"
+    home: "/srv/{{ noisebridge_org_user }}"
+    createhome: false
+    shell: /sbin/nologin
+    system: yes
+
+- name: Create dirs
+  file:
+    path: "{{ item }}"
+    owner: "{{ noisebridge_org_user }}"
+    group: "{{ noisebridge_org_user }}"
+    state: directory
+    mode: 0755
+  with_items:
+  - "/srv/{{ noisebridge_org_user }}"
+  - "{{ noisebridge_org_base }}"
+
+- name: Checkout repository
+  become: true
+  become_user: "{{ noisebridge_org_user }}"
+  git:
+    repo: https://github.com/marcoEDU/HackspaceOS.git
+    dest: "{{ noisebridge_org_base }}"
+    version: "{{ noisebridge_org_version }}"
+  notify:
+  - restart noisebridge_org
+
+- name: Setup venv
+  become: true
+  become_user: "{{ noisebridge_org_user }}"
+  pip:
+    requirements: "{{ noisebridge_org_base }}/requirements.txt"
+    virtualenv: "{{ noisebridge_org_base }}/venv"
+    virtualenv_python: python3.8
+
+- name: "-e ."
+  become: true
+  become_user: "{{ noisebridge_org_user }}"
+  pip:
+    editable: true
+    name: "{{ noisebridge_org_base }}"
+    virtualenv: "{{ noisebridge_org_base }}/venv"
+    virtualenv_python: python3.8
+
+- name: Template out systemd file
+  template:
+    src: noisebridge_org.service
+    dest: /etc/systemd/system/noisebridge_org.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+  - reload noisebridge_org service file
+
+- name: Template out .env file
+  template:
+    src: dot_env
+    dest: "{{ noisebridge_org_base }}/.env"
+    owner: root
+    group: "{{ noisebridge_org_user }}"
+    mode: '0640'
+  notify:
+  - restart noisebridge_org
